@@ -5,6 +5,7 @@ import { WalletProvider } from './context/WalletContext';
 import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
 import { FunderDashboard } from './pages/FunderDashboard';
+import { ProgrammeDetail } from './pages/ProgrammeDetail';
 import { RecipientDashboard } from './pages/RecipientDashboard';
 import { VerifierDashboard } from './pages/VerifierDashboard';
 
@@ -18,6 +19,8 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="funders" element={<FunderDashboard />} />
+              <Route path="programme" element={<ProgrammeDetail />} />
+              <Route path="programme/:programmeId" element={<ProgrammeDetail />} />
               <Route path="recipients" element={<RecipientDashboard />} />
               <Route path="verifiers" element={<VerifierDashboard />} />
             </Route>
