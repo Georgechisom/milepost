@@ -153,7 +153,6 @@ Alphabetical cross-reference across all contracts:
 | `ExceedsRequested` | program | 11 | Fault |
 | `ExpiryInPast` | attest | 7 | Fault |
 | `FeeAlreadySwept` | program | 24 | Fault |
-| `FeeTooHigh` | policy-spend | 9 | Fault |
 | `FeeTooHigh` | program | 6 | Fault |
 | `FeeTooHigh` | registry | 2 | Fault |
 | `ForbiddenCall` | policy-spend | 4 | Fault |

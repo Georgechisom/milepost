@@ -1,4 +1,4 @@
-﻿import { useWallet } from '../../context/useWallet';
+import { useWallet } from '../../context/useWallet';
 import { useProgramme } from '../../hooks/useProgramme';
 import { useContractRead } from '../../hooks/useContractRead';
 import { useTransaction, phaseLabel } from '../../hooks/useTransaction';

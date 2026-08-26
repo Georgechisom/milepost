@@ -1,4 +1,4 @@
-﻿import './FunderDashboard.css';
+import './FunderDashboard.css';
 import { TrendingUp, CheckCircle, Activity, WalletCards } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContractRead, useContractResult, useProgramme } from '../hooks';
