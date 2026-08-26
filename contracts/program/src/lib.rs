@@ -1112,7 +1112,7 @@ impl Programme {
         env.storage()
             .persistent()
             .get(&Key::Award(recipient))
-            .ok_or(Error::ApplicationNotFound)
+            .ok_or(Error::AwardNotFound)
     }
 
     pub fn contributed_by(env: Env, donor: Address) -> i128 {

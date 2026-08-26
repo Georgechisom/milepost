@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useContractRead, useContractResult, useProgramme, useTransaction, phaseLabel } from '../hooks';
 import { AsyncView, Empty } from '../components/state/AsyncStates';
 import { Badge, Button, Card, Field, Modal, Stat } from '../components/ui';
@@ -49,21 +49,20 @@ export const RecipientDashboard = () => {
 
   // Candidate payees to check, persisted per programme so a recipient does
   // not re-enter the same address every visit.
-  const [candidates, setCandidates] = useState<string[]>(() => loadCandidates(programmeId));
-  useEffect(() => {
-    setCandidates(loadCandidates(programmeId));
-  }, [programmeId]);
+  // Stored candidates are the source of truth; sessionAdds covers the case
+  // where the write failed, so the picker still works for this session.
+  // Deriving rather than syncing in an effect keeps the programme switch to a
+  // single render.
+  const [sessionAdds, setSessionAdds] = useState<Record<string, string[]>>({});
+  const candidates = useMemo(() => {
+    const stored = loadCandidates(programmeId);
+    const extra = (sessionAdds[programmeId] ?? []).filter((a) => !stored.includes(a));
+    return [...stored, ...extra];
+  }, [programmeId, sessionAdds]);
 
   const [payeeStatus, setPayeeStatus] = useState<Record<string, PayeeStatus>>({});
   useEffect(() => {
     let cancelled = false;
-    setPayeeStatus((prev) => {
-      const next = { ...prev };
-      for (const address of candidates) {
-        if (!next[address]) next[address] = 'checking';
-      }
-      return next;
-    });
     (async () => {
       const entries = await Promise.all(
         candidates.map(async (address): Promise<[string, PayeeStatus]> => {
@@ -84,16 +83,17 @@ export const RecipientDashboard = () => {
   }, [programme, candidates]);
 
   const addCandidate = (address: string) => {
-    setCandidates((prev) => {
-      if (prev.includes(address)) return prev;
-      const next = [...prev, address];
-      try {
-        window.localStorage.setItem(candidateStorageKey(programmeId), JSON.stringify(next));
-      } catch {
-        // Best-effort only — the picker still works for this session.
-      }
-      return next;
-    });
+    if (candidates.includes(address)) return;
+    try {
+      const next = [...loadCandidates(programmeId), address];
+      window.localStorage.setItem(candidateStorageKey(programmeId), JSON.stringify(next));
+    } catch {
+      // Best-effort only — sessionAdds below still carries it for this session.
+    }
+    setSessionAdds((prev) => ({
+      ...prev,
+      [programmeId]: [...(prev[programmeId] ?? []), address],
+    }));
   };
 
   const [candidateInput, setCandidateInput] = useState('');
@@ -117,8 +117,17 @@ export const RecipientDashboard = () => {
 
   const transaction = useTransaction<bigint>({ contract: 'program' });
 
+  // Reading the clock during render is impure — two renders would disagree.
+  // Ticking it as state matches ProgrammeDetail and keeps the close-out honest
+  // without a refresh.
+  const [nowSeconds, setNowSeconds] = useState(() => Math.floor(Date.now() / 1000));
+  useEffect(() => {
+    const interval = window.setInterval(() => setNowSeconds(Math.floor(Date.now() / 1000)), 30_000);
+    return () => window.clearInterval(interval);
+  }, []);
+
   const sweepDeadline = config.data?.sweep_deadline ?? null;
-  const spendClosed = sweepDeadline !== null && BigInt(Math.floor(Date.now() / 1000)) >= sweepDeadline;
+  const spendClosed = sweepDeadline !== null && BigInt(nowSeconds) >= sweepDeadline;
 
   const openConfirm = () => {
     if (!selectedPayee) {

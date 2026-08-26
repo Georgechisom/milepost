@@ -583,7 +583,8 @@ fn ready_applicants(f: &Fixture, applicants: &[(Address, i128)]) {
     to_review(f);
     for (applicant, amount) in applicants {
         for i in 0..f.client.get_config().quorum {
-            f.client.review(&f.reviewers.get(i).unwrap(), applicant, amount);
+            f.client
+                .review(&f.reviewers.get(i).unwrap(), applicant, amount);
         }
     }
 }
@@ -616,9 +617,15 @@ fn the_same_application_can_be_refused_in_one_order_and_funded_in_the_reverse() 
     let (b_funded_when_first, a_funded_when_second) = run(false);
 
     assert!(a_funded_when_first, "called first, a must be funded");
-    assert!(!b_funded_when_second, "called second against a's commitment, b must be refused");
+    assert!(
+        !b_funded_when_second,
+        "called second against a's commitment, b must be refused"
+    );
     assert!(b_funded_when_first, "called first, b must be funded");
-    assert!(!a_funded_when_second, "called second against b's commitment, a must be refused");
+    assert!(
+        !a_funded_when_second,
+        "called second against b's commitment, a must be refused"
+    );
 }
 
 #[test]
@@ -703,11 +710,15 @@ fn finalize_never_exceeds_the_budget_under_any_ordering() {
         // (1_200 > 900), so it and the fourth must be refused, regardless of
         // which applicants happen to occupy which position.
         for (position, &index) in order.iter().enumerate() {
-            let result = f.client.try_finalize(&applicants[index], &payee, &Mode::Direct);
+            let result = f
+                .client
+                .try_finalize(&applicants[index], &payee, &Mode::Direct);
             if position < 2 {
                 match result {
-                    Ok(award) => assert_eq!(award.granted, 400),
-                    Err(e) => panic!("expected success at position {position} in order {order:?}, got {e:?}"),
+                    Ok(award) => assert_eq!(award.unwrap().granted, 400),
+                    Err(e) => panic!(
+                        "expected success at position {position} in order {order:?}, got {e:?}"
+                    ),
                 }
             } else {
                 assert_eq!(
@@ -731,7 +742,8 @@ fn finalize_never_exceeds_the_budget_under_any_ordering() {
         // No ordering double-commits an already-funded application.
         for &index in order[..2].iter() {
             assert_eq!(
-                f.client.try_finalize(&applicants[index], &payee, &Mode::Direct),
+                f.client
+                    .try_finalize(&applicants[index], &payee, &Mode::Direct),
                 Err(Ok(Error::AlreadyFinalized)),
                 "re-finalizing an already-funded application must be rejected, in order {order:?}"
             );
@@ -739,7 +751,8 @@ fn finalize_never_exceeds_the_budget_under_any_ordering() {
         // A refusal is retryable and deterministic, not a one-way trap.
         for &index in order[2..].iter() {
             assert_eq!(
-                f.client.try_finalize(&applicants[index], &payee, &Mode::Direct),
+                f.client
+                    .try_finalize(&applicants[index], &payee, &Mode::Direct),
                 Err(Ok(Error::InsufficientBudget)),
                 "retrying a refusal must fail the same way, in order {order:?}"
             );
