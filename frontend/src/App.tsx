@@ -10,6 +10,8 @@ import { RecipientDashboard } from './pages/RecipientDashboard';
 import { VerifierDashboard } from './pages/VerifierDashboard';
 import { FinalizeAwards } from './pages/FinalizeAwards';
 import { ProgrammeDirectory } from './pages/ProgrammeDirectory';
+import { SpendPolicy } from './pages/SpendPolicy';
+import { RegistryAdmin } from './pages/RegistryAdmin';
 import { Standing } from './pages/Standing';
 import { AwardProgress } from './pages/AwardProgress';
 import { ApplicationTimeline } from './pages/ApplicationTimeline';
@@ -32,6 +34,8 @@ function App() {
               <Route path="recipients/award-progress" element={<AwardProgress />} />
               <Route path="recipients/application-timeline" element={<ApplicationTimeline />} />
               <Route path="verifiers" element={<VerifierDashboard />} />
+              <Route path="policy" element={<SpendPolicy />} />
+              <Route path="admin" element={<RegistryAdmin />} />
               <Route path="finalize" element={<FinalizeAwards />} />
             </Route>
           </Routes>
