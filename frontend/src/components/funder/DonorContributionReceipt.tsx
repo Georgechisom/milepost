@@ -10,7 +10,7 @@ export function DonorContributionReceipt() {
   const { client: programme } = useProgramme();
 
   const contributionReq = useContractRead(() => {
-    if (!donorAddress) return Promise.resolve(0n);
+    if (!donorAddress) return Promise.resolve({ result: 0n });
     return programme.contributed_by({ donor: donorAddress });
   }, [programme, donorAddress]);
 
@@ -42,7 +42,6 @@ export function DonorContributionReceipt() {
   }
 
   const contribution = contributionReq.data ?? 0n;
-  const totalContributed = totalContributedReq.data ?? 0n;
 
   if (contribution === 0n && !contributionReq.loading) {
     return (

@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import { useProgramme } from "../../hooks/useProgramme";
 import { useContractRead } from "../../hooks/useContractRead";
 import { Badge } from "../ui/Badge";

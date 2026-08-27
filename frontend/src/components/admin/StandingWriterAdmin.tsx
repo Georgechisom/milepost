@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Client, networks } from "@milepost/record";
 import { useWallet } from "../../context/useWallet";
-import { useContractRead } from "../../hooks/useContractRead";
+import { useContractRead, useContractResult } from "../../hooks/useContractRead";
 import { useTransaction } from "../../hooks/useTransaction";
 import { looksLikeAddress, truncateAddress } from "../../lib/format";
 import { TransactionOutcome } from "../state/AsyncStates";
@@ -18,14 +18,14 @@ export function StandingWriterAdmin() {
   const [writerToCheck, setWriterToCheck] = useState<string>("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const adminReq = useContractRead(() => recordClient.get_admin(), [], {
+  const adminReq = useContractResult(() => recordClient.get_admin(), [], {
     contract: "record",
   });
 
   const writerStatusReq = useContractRead(
     () => {
       if (!writerToCheck || !looksLikeAddress(writerToCheck)) {
-        return Promise.resolve(false);
+        return Promise.resolve({ result: false });
       }
       return recordClient.is_writer({ addr: writerToCheck });
     },
