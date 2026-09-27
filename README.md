@@ -32,6 +32,15 @@ That gap is why this is built on Stellar rather than an EVM chain:
 
 New to the repo? Start with the [glossary](docs/glossary.md): it explains the Stellar, Soroban, and protocol terms the code and docs use without assuming prior domain knowledge.
 
+## Guides
+
+Understand the protocol from each participant's perspective:
+
+- [**Funder Guide**](docs/guides/funders.md) — Where your money goes, how refunds work, and what the verified payee list promises
+- [**Verifier Guide**](docs/guides/verifiers.md) — What you attest, how to check before signing, and what revoking does (and doesn't) do
+- [**Recipient Guide**](docs/guides/recipients.md) — How to apply, how the median award works, tranches, payment modes, and standing records
+- [**Choosing a Payment Mode**](docs/guides/choosing-a-mode.md) — What each of the four modes enforces, depends on, and when to use it
+
 ## One protocol, many verticals
 
 Education is the demo scenario, not the design. The contracts carry no domain
